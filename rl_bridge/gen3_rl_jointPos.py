@@ -154,20 +154,8 @@ class JointPublisher(Node):
             cube_quat = self.object_orientation[:4]  # (4,)
             gripper_to_cube_pos = cube_pos - ee_pos  # (3,)
 
-            state = np.concatenate([
-                joint_pos,            # [0:6]
-                joint_pos_cos,        # [6:12]
-                joint_pos_sin,        # [12:18]
-                joint_vel,            # [18:24]
-                ee_pos,               # [24:27]
-                ee_quat,              # [27:31]
-                ee_quat_site,         # [31:35] (placeholder)
-                gripper_qpos,         # [35:41] (placeholder)
-                gripper_qvel,         # [41:47] (placeholder)
-                cube_pos,             # [47:50]
-                cube_quat,            # [50:54]
-                gripper_to_cube_pos   # [54:57]
-            ])
+            # ToDo: concatenate state
+            state = []
             self.current_state = state
             if hasattr(self, '_state_debug_count'):
                 self._state_debug_count += 1
@@ -203,9 +191,11 @@ class JointPublisher(Node):
             if self.agent is not None:
                 # Get action from trained model (should be joint deltas)
                 action = self.agent.select_action(self.current_state)
-                # Apply action as delta to current joint positions
-                target_positions = [pos + delta for pos, delta in zip(self.current_joint_positions, action)]
-                self.send_joint_positions(target_positions)
+
+                # ToDo: Apply action as delta to current joint positions
+                # target_positions = self.current_joint_positions + delta action
+                # Pass target_positions to send_joint_positions(positions)
+
                 # Optionally, send gripper command if action includes gripper
                 if len(action) > 6:
                     gripper_action = action[6]
@@ -221,9 +211,10 @@ class JointPublisher(Node):
     def send_gripper_command_from_rl(self, gripper_action):
         """Send gripper command based on RL action (-1=open, +1=close)"""
         try:
+            # ToDo: Map RL action to gripper position
             # Convert RL action (-1 to +1) to gripper position (0.0 to 0.7)
             # -1 (RL) -> 0.0 (fully open), +1 (RL) -> 0.7 (fully closed, Webots limit)
-            gripper_position = 0.35 * (gripper_action + 1)  # Maps [-1,1] to [0.0, 0.7]
+            gripper_position = gripper_action  # Maps [-1,1] to [0.0, 0.7]
 
             goal_msg = GripperCommand.Goal()
             goal_msg.command.position = gripper_position
