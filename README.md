@@ -18,7 +18,7 @@ Therefore change:
 ```sys.path.append('/home/user/robosuite_ws/robosuite_training_examples')```
 and
 ```
-    actor_model_path = "/home/max/robosuite_ws/robosuite_training_examples/tmp/kinova_td3/best_actor.pth"  # Adjust this path as needed
+actor_model_path = "/home/max/robosuite_ws/robosuite_training_examples/tmp/kinova_td3/best_actor.pth"  # Adjust this path as needed
 ```
 to the path where your model is.
 
